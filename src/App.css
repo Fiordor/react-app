@@ -32,22 +32,12 @@
   }
 }
 
-.box {
-  border: 2px solid black;
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-
-  position: absolute;
+.quote cite {
+  text-align: justify;
+  font-size: 13px;
 }
 
-.Hbar {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  top: 50px;
-  background-color: blue;
+.quote p {
+  text-align: right;
+  font-size: 11px;
 }

@@ -1,57 +1,66 @@
 import React, { Component } from 'react';
 import './App.css';
+import Quote from './Quote.js';
+import fire from './fire.js';
+
+
 
 class App extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = { contador:0, x:0, y:0 }
+  constructor() {
+    super();
+    this.state = { person: "", text: "", allData: [] };
   }
 
-  _onMouseMove(e) {
-    this.setState({x: e.screenX, y: e.screenY })
-  }
+  //Lee los datos del cloud firestore
+  getData = () => {
 
-  aumentar() { this.setState({contador:this.state.contador+1}) }
+    //Conecta con firestore
+    const database = fire.firestore();
 
-  decrementar() {
-    let contador = this.state.contador
-    if (contador>0) { this.setState({contador:this.state.contador-1}) }
+    //Array con los objetos de la firestore
+    var wholeData = []
+
+    //Lee la coleccion de CitasLegendarias, ordenadas ascendentemente por el atributo person
+    database.collection('CitasLegendarias').orderBy('person', 'asc').get().then(snapshot => {
+
+      //No se que es snapshot, un array, objeto...
+
+      //Para cada objeto de snapshot lo lee y lo guarda en wholeData
+      snapshot.forEach(doc => { console.log(doc.data()); wholeData.push(doc.data()) });
+
+      //Muestra todo el contenido recolectado por wholeData
+      console.log(wholeData)
+
+      //Guarda el contenido recolectado por wholeData en allData de state
+      //(no se que es state ni como funciona correctamente)
+      this.setState({ allData:wholeData })
+
+      //Muestra el contenido de allData
+      console.log(this.state.allData)
+
+      //En caso de error lo muestra en consola
+    }).catch(error => { console.log('Error!', error); })
   }
 
   render() {
 
-    const {x ,y} = this.state
-
-    const stylesOnX = {
-      position: "relative",
-      width: "5px",
-      height: "100%",
-      left: this.state.x - 343 + "px",
-      backgroundColor: "blue",
-    }
-
-    const stylesOnY = {
-      position: "relative",
-      width: "100%",
-      height: "5px",
-      top: this.state.y - 662 + "px",
-      backgroundColor: "blue",
-    }
+    //Devuelve un monton de <li> con los objetos en html
+    //coge el array de allData y hace un bucle para cada uno de los objetos
+    var listOfData = this.state.allData.map((val, i) => {
+      //Lee la person del objeto de la coleccion de CitasLegendarias
+      var person = val.person
+      //Lee el texto de Citas
+      var text = val.text
+      //Return en html de un <li> mostrando el text y person (no se que hace key={i})
+      return (<li key={i}><Quote text={text} person={person}/></li>)
+    })
 
     return (
-      <div className="box" onMouseMove={this._onMouseMove.bind(this)}>
-
-        <div style={stylesOnX}></div>
-        <div style={stylesOnY}></div>
-
-        <h1>Mouse coordinates: {x} {y}</h1>
-
-        {/*
-        <input type="button" onClick={this.aumentar.bind(this)} value="Incrementar"/>
-        <h3>{this.state.contador}</h3>
-        <input type="button" onClick={this.decrementar.bind(this)} value="Decrementar"/>
-        */}
+      <div>
+        <h1>Citas</h1>
+        <button onClick={this.getData}>Get data</button>
+        <ul>{listOfData}</ul>
       </div>
     );
   }
