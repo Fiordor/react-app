@@ -1,7 +1,7 @@
 import React from "react";
 import './App.css';
 
-function Quote(props) {
+const Quote = (props) => {
 
     return(
 
